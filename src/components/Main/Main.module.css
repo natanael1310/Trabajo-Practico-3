@@ -1,0 +1,27 @@
+.main {
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  min-height: 60vh;
+}
+.title {
+  color: #333;
+}
+.subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.card {
+  background: rgb(235, 224, 224);
+  border: 1px solid #c4c4c4;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 200px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
