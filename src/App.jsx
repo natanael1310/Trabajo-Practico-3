@@ -1,48 +1,59 @@
-import Saludo from "./components/Saludo";
-import TarjetaPerfil from "./components/Tarjetaperfil"; // Con la 'p' minúscula para que use tu archivo suelto
-import Contador from "./components/Contador";
-import ListaTareas from "./components/ListaTareas";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import TarjetaUsuario from "./components/TarjetaUsuario";
 
 function App() {
-  // Datos simulados para la tarjeta de perfil (Parte 2)
-   const usuario1 = {
-    nombre: "Ada Lovelace",
-    rol: "Pionera de la Programación",
-    foto: "https://picsum.photos/80",
-  };
+  // 2. Estados de la petición: datos (éxito), cargando y error
+  const [usuarios, setUsuarios] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 1. Uso de useEffect para hacer la petición al montar el componente
+  useEffect(() => {
+    // 3. Leer la URL base de la API desde la variable de entorno (.env)
+    const urlApi = import.meta.env.VITE_API_URL;
+
+    axios.get(urlApi)
+      .then((respuesta) => {
+        // Estado Éxito: guardamos los datos reales y apagamos el cargando
+        setUsuarios(respuesta.data);
+        setCargando(false);
+      })
+      .catch((errorPeticion) => {
+        // Estado Error: guardamos el mensaje si la petición falla
+        setError("No se pudieron cargar los datos de la API externa.");
+        setCargando(false);
+      });
+  }, []);
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif", backgroundColor: "#f9f9f9", minHeight: "100vh", color: "#333" }}>
-      <h1>Actividad en Clase N.º 2 — ISDeM</h1>
-      <hr style={{ marginBottom: "2rem", border: "1px solid #ddd" }} />
-      
-      {/* Parte 1: Uso de props simple */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Parte 1: Componente Saludo</h2>
-        <Saludo nombre="Valentina" />
-        <Saludo nombre="Tomás" />
-      </section>
+    <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+      <h1 style={{ textAlign: "center", color: "#333", marginBottom: "30px" }}>
+        Trabajo Práctico N.º 3 — Usuarios de la API
+      </h1>
 
-      {/* Parte 2: Desestructuración de props */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Parte 2: Tarjeta de Perfil</h2>
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-          <TarjetaPerfil nombre={usuario1.nombre} cargo={usuario1.rol} imagen={usuario1.foto} />
-          <TarjetaPerfil nombre="Grace Hopper" cargo="Inventora del compilador" imagen="https://picsum.photos/80" />
-        </div>
-      </section>
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        {/* 2. Modelar y mostrar en pantalla los tres estados de la petición */}
+        
+        {/* ESTADO 1: CARGANDO */}
+        {cargando && (
+          <div style={{ textAlign: "center", padding: "20px", fontWeight: "bold", color: "#007bff" }}>
+            ⏳ Cargando datos reales desde la API externa...
+          </div>
+        )}
 
-      {/* Parte 3: Manejo de Estado Simple */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Parte 3: Contador Funcional</h2>
-        <Contador />
-      </section>
+        {/* ESTADO 2: ERROR */}
+        {error && (
+          <div style={{ backgroundColor: "#f8d7da", color: "#721c24", padding: "15px", borderRadius: "5px", textAlign: "center", fontWeight: "bold" }}>
+            ❌ {error}
+          </div>
+        )}
 
-      {/* Parte 4: Estado Complejo (Arreglos) */}
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Parte 4: Lista de Tareas Inmutable</h2>
-        <ListaTareas />
-      </section>
+        {/* ESTADO 3: ÉXITO (Muestra la colección de usuarios reales de la API) */}
+        {!cargando && !error && usuarios.map((usuario) => (
+          <TarjetaUsuario key={usuario.id} usuario={usuario} />
+        ))}
+      </div>
     </div>
   );
 }
